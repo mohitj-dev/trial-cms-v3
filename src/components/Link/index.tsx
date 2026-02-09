@@ -5,11 +5,16 @@ import React from 'react'
 
 import type { Page, Post } from '@/payload-types'
 
+import { getPostPath } from '@/utilities/getPostPath'
+
 type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
   children?: React.ReactNode
   className?: string
   label?: string | null
+  'aria-controls'?: string
+  'aria-expanded'?: boolean
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>
   newTab?: boolean | null
   reference?: {
     relationTo: 'pages' | 'posts'
@@ -27,17 +32,32 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     children,
     className,
     label,
+    onClick,
     newTab,
     reference,
     size: sizeFromProps,
     url,
   } = props
 
+  const breadcrumbsUrl =
+    type === 'reference' &&
+    typeof reference?.value === 'object' &&
+    reference?.value &&
+    'breadcrumbs' in reference.value &&
+    Array.isArray(reference.value.breadcrumbs)
+      ? reference.value.breadcrumbs.at(-1)?.url
+      : null
+
   const href =
-    type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
-      ? `${reference?.relationTo !== 'pages' ? `/${reference?.relationTo}` : ''}/${
-          reference.value.slug
-        }`
+    type === 'reference' && typeof reference?.value === 'object' && reference.value
+      ? breadcrumbsUrl ||
+        (reference?.relationTo === 'posts'
+          ? getPostPath(reference.value as Post)
+          : reference.value.slug
+            ? `${reference?.relationTo !== 'pages' ? `/${reference?.relationTo}` : ''}/${
+                reference.value.slug
+              }`
+            : null)
       : url
 
   if (!href) return null
@@ -48,7 +68,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   /* Ensure we don't break any styles set by richText */
   if (appearance === 'inline') {
     return (
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+      <Link className={cn(className)} href={href || url || ''} onClick={onClick} {...newTabProps}>
         {label && label}
         {children && children}
       </Link>
@@ -57,7 +77,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   return (
     <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+      <Link className={cn(className)} href={href || url || ''} onClick={onClick} {...newTabProps}>
         {label && label}
         {children && children}
       </Link>

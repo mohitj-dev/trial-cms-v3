@@ -9,6 +9,7 @@ import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
+import { getPostPath } from '@/utilities/getPostPath'
 
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -20,7 +21,16 @@ const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
 const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
   const url = getServerSideURL()
 
-  return doc?.slug ? `${url}/${doc.slug}` : url
+  if ('categories' in (doc || {})) {
+    const postPath = getPostPath(doc as Post)
+    return postPath ? `${url}${postPath}` : url
+  }
+
+  const breadcrumbsUrl = (doc as Page)?.breadcrumbs?.at(-1)?.url
+  const resolvedPath =
+    breadcrumbsUrl && breadcrumbsUrl.length > 0 ? breadcrumbsUrl : doc?.slug ? `/${doc.slug}` : ''
+
+  return `${url}${resolvedPath}`
 }
 
 export const plugins: Plugin[] = [
@@ -47,8 +57,15 @@ export const plugins: Plugin[] = [
     },
   }),
   nestedDocsPlugin({
-    collections: ['categories'],
-    generateURL: (docs) => docs.reduce((url, doc) => `${url}/${doc.slug}`, ''),
+    collections: ['categories', 'pages'],
+    generateURL: (docs) => {
+      const url = docs.reduce((path, doc) => {
+        const slug = doc?.slug ?? ''
+        if (!slug || slug === 'home') return path
+        return `${path}/${slug}`
+      }, '')
+      return url === '/home' ? '' : url || ''
+    },
   }),
   seoPlugin({
     generateTitle,

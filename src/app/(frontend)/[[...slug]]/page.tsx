@@ -13,6 +13,10 @@ import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
+type Params = {
+  slug?: string[]
+}
+
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
   const pages = await payload.find({
@@ -23,40 +27,48 @@ export async function generateStaticParams() {
     pagination: false,
     select: {
       slug: true,
+      breadcrumbs: true,
     },
   })
 
   const params = pages.docs
     ?.filter((doc) => {
-      return doc.slug !== 'home'
+      const url = doc?.breadcrumbs?.at(-1)?.url
+      return doc.slug !== 'home' && url !== '/'
     })
-    .map(({ slug }) => {
-      return { slug }
+    .map((doc) => {
+      const url = doc?.breadcrumbs?.at(-1)?.url || `/${doc.slug}`
+      const segments = url.split('/').filter(Boolean)
+      return { slug: segments }
     })
 
   return params
 }
 
 type Args = {
-  params: Promise<{
-    slug?: string
-  }>
+  params: Promise<Params>
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = 'home' } = await paramsPromise
-  // Decode to support slugs with special characters
-  const decodedSlug = decodeURIComponent(slug)
-  const url = '/' + decodedSlug
+  const { slug = [] } = await paramsPromise
+
+  const path = slug.length === 0 ? '/' : `/${slug.map(decodeURIComponent).join('/')}`
+  const url = path
   let page: RequiredDataFromCollectionSlug<'pages'> | null
 
-  page = await queryPageBySlug({
-    slug: decodedSlug,
-  })
+  if (path === '/') {
+    page = await queryPageBySlug({
+      slug: 'home',
+    })
+  } else {
+    page = await queryPageByPath({
+      path,
+    })
+  }
 
   // Remove this code once your website is seeded
-  if (!page && slug === 'home') {
+  if (!page && path === '/') {
     page = homeStatic
   }
 
@@ -81,12 +93,13 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = 'home' } = await paramsPromise
-  // Decode to support slugs with special characters
-  const decodedSlug = decodeURIComponent(slug)
-  const page = await queryPageBySlug({
-    slug: decodedSlug,
-  })
+  const { slug = [] } = await paramsPromise
+  const path = slug.length === 0 ? '/' : `/${slug.map(decodeURIComponent).join('/')}`
+
+  const page =
+    path === '/'
+      ? await queryPageBySlug({ slug: 'home' })
+      : await queryPageByPath({ path })
 
   return generateMeta({ doc: page })
 }
@@ -105,6 +118,27 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
     where: {
       slug: {
         equals: slug,
+      },
+    },
+  })
+
+  return result.docs?.[0] || null
+})
+
+const queryPageByPath = cache(async ({ path }: { path: string }) => {
+  const { isEnabled: draft } = await draftMode()
+
+  const payload = await getPayload({ config: configPromise })
+
+  const result = await payload.find({
+    collection: 'pages',
+    draft,
+    limit: 1,
+    pagination: false,
+    overrideAccess: draft,
+    where: {
+      'breadcrumbs.url': {
+        equals: path,
       },
     },
   })

@@ -30,6 +30,17 @@ export const Media: CollectionConfig = {
       //required: true,
     },
     {
+      name: 'mobileImage',
+      type: 'relationship',
+      relationTo: 'media',
+      filterOptions: {
+        mimeType: { contains: 'image' },
+      },
+      admin: {
+        description: 'Optional mobile-specific image to use in responsive heroes.',
+      },
+    },
+    {
       name: 'caption',
       type: 'richText',
       editor: lexicalEditor({

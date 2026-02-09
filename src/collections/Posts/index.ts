@@ -15,6 +15,7 @@ import { Banner } from '../../blocks/Banner/config'
 import { Code } from '../../blocks/Code/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
+import { getPostPath } from '@/utilities/getPostPath'
 import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
 
@@ -26,6 +27,7 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from 'payload'
+import type { Post } from '@/payload-types'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
@@ -41,7 +43,10 @@ export const Posts: CollectionConfig<'posts'> = {
   defaultPopulate: {
     title: true,
     slug: true,
-    categories: true,
+    categories: {
+      slug: true,
+      breadcrumbs: true,
+    },
     meta: {
       image: true,
       description: true,
@@ -53,6 +58,7 @@ export const Posts: CollectionConfig<'posts'> = {
       url: ({ data, req }) =>
         generatePreviewPath({
           slug: data?.slug,
+          path: getPostPath(data as Post) || undefined,
           collection: 'posts',
           req,
         }),
@@ -60,6 +66,7 @@ export const Posts: CollectionConfig<'posts'> = {
     preview: (data, { req }) =>
       generatePreviewPath({
         slug: data?.slug as string,
+        path: getPostPath(data as Post) || undefined,
         collection: 'posts',
         req,
       }),

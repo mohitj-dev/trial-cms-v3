@@ -2,24 +2,26 @@ import React from 'react'
 
 import type { Page } from '@/payload-types'
 
-import { HighImpactHero } from '@/heros/HighImpact'
-import { LowImpactHero } from '@/heros/LowImpact'
-import { MediumImpactHero } from '@/heros/MediumImpact'
-
-const heroes = {
-  highImpact: HighImpactHero,
-  lowImpact: LowImpactHero,
-  mediumImpact: MediumImpactHero,
-}
+import { AnimatedTwoLineHero } from '@/heros/AnimatedTwoLine'
+import { CarouselHero } from '@/heros/Carousel'
+import { StandardHero } from '@/heros/Standard'
 
 export const RenderHero: React.FC<Page['hero']> = (props) => {
   const { type } = props || {}
 
   if (!type || type === 'none') return null
 
-  const HeroToRender = heroes[type]
+  if (type === 'animatedTwoLine' && props?.animatedTwoLine) {
+    return <AnimatedTwoLineHero {...props.animatedTwoLine} />
+  }
 
-  if (!HeroToRender) return null
+  if (type === 'standard' && props?.standard) {
+    return <StandardHero {...props.standard} />
+  }
 
-  return <HeroToRender {...props} />
+  if (type === 'carousel' && props?.carousel) {
+    return <CarouselHero {...props.carousel} />
+  }
+
+  return null
 }

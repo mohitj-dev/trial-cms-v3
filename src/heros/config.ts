@@ -1,12 +1,5 @@
 import type { Field } from 'payload'
 
-import {
-  FixedToolbarFeature,
-  HeadingFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
-} from '@payloadcms/richtext-lexical'
-
 import { linkGroup } from '@/fields/linkGroup'
 
 export const hero: Field = {
@@ -16,7 +9,7 @@ export const hero: Field = {
     {
       name: 'type',
       type: 'select',
-      defaultValue: 'lowImpact',
+      defaultValue: 'standard',
       label: 'Type',
       options: [
         {
@@ -24,48 +17,225 @@ export const hero: Field = {
           value: 'none',
         },
         {
-          label: 'High Impact',
-          value: 'highImpact',
+          label: 'Animated Two-Line',
+          value: 'animatedTwoLine',
         },
         {
-          label: 'Medium Impact',
-          value: 'mediumImpact',
+          label: 'Standard',
+          value: 'standard',
         },
         {
-          label: 'Low Impact',
-          value: 'lowImpact',
+          label: 'Carousel',
+          value: 'carousel',
         },
       ],
       required: true,
     },
     {
-      name: 'richText',
-      type: 'richText',
-      editor: lexicalEditor({
-        features: ({ rootFeatures }) => {
-          return [
-            ...rootFeatures,
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
-      label: false,
-    },
-    linkGroup({
-      overrides: {
-        maxRows: 2,
-      },
-    }),
-    {
-      name: 'media',
-      type: 'upload',
+      name: 'animatedTwoLine',
+      type: 'group',
       admin: {
-        condition: (_, { type } = {}) => ['highImpact', 'mediumImpact'].includes(type),
+        condition: (_, siblingData) => siblingData?.type === 'animatedTwoLine',
       },
-      relationTo: 'media',
-      required: true,
+      fields: [
+        {
+          name: 'staticTitle',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'animatedPhrases',
+          type: 'array',
+          minRows: 1,
+          labels: {
+            singular: 'Phrase',
+            plural: 'Phrases',
+          },
+          fields: [
+            {
+              name: 'text',
+              type: 'text',
+              required: true,
+            },
+          ],
+        },
+        {
+          name: 'typingSpeed',
+          type: 'number',
+          defaultValue: 60,
+          admin: {
+            description: 'Milliseconds per character for the typing effect.',
+          },
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+        },
+        {
+          name: 'metrics',
+          type: 'array',
+          labels: {
+            singular: 'Metric',
+            plural: 'Metrics',
+          },
+          maxRows: 3,
+          fields: [
+            {
+              name: 'value',
+              type: 'text',
+              required: true,
+              admin: {
+                description: 'Number or value (e.g. 37, 575+)',
+              },
+            },
+            {
+              name: 'label',
+              type: 'text',
+              required: true,
+              admin: {
+                description: 'Metric label (e.g. Locations, Awards)',
+              },
+            },
+          ],
+        },
+        {
+          name: 'backgroundImage',
+          type: 'upload',
+          relationTo: 'media',
+        },
+        linkGroup({
+          overrides: {
+            dbName: 'atl_links',
+            maxRows: 2,
+            minRows: 1,
+          },
+        }),
+      ],
+    },
+    {
+      name: 'standard',
+      type: 'group',
+      admin: {
+        condition: (_, siblingData) => siblingData?.type === 'standard',
+      },
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+        },
+        {
+          name: 'metrics',
+          type: 'array',
+          labels: {
+            singular: 'Metric',
+            plural: 'Metrics',
+          },
+          maxRows: 3,
+          fields: [
+            {
+              name: 'value',
+              type: 'text',
+              required: true,
+              admin: {
+                description: 'Number or value (e.g. 37, 575+)',
+              },
+            },
+            {
+              name: 'label',
+              type: 'text',
+              required: true,
+              admin: {
+                description: 'Metric label (e.g. Locations, Awards)',
+              },
+            },
+          ],
+        },
+        {
+          name: 'backgroundImage',
+          type: 'upload',
+          relationTo: 'media',
+        },
+        linkGroup({
+          overrides: {
+            dbName: 'std_links',
+            maxRows: 2,
+            minRows: 1,
+          },
+        }),
+      ],
+    },
+    {
+      name: 'carousel',
+      type: 'group',
+      admin: {
+        condition: (_, siblingData) => siblingData?.type === 'carousel',
+      },
+      fields: [
+        {
+          name: 'slides',
+          type: 'array',
+          minRows: 1,
+          labels: {
+            singular: 'Slide',
+            plural: 'Slides',
+          },
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+            },
+            {
+              name: 'description',
+              type: 'textarea',
+            },
+            {
+              name: 'metrics',
+              type: 'array',
+              labels: {
+                singular: 'Metric',
+                plural: 'Metrics',
+              },
+              maxRows: 3,
+              fields: [
+                {
+                  name: 'value',
+                  type: 'text',
+                  required: true,
+                  admin: {
+                    description: 'Number or value (e.g. 37, 575+)',
+                  },
+                },
+                {
+                  name: 'label',
+                  type: 'text',
+                  required: true,
+                  admin: {
+                    description: 'Metric label (e.g. Locations, Awards)',
+                  },
+                },
+              ],
+            },
+            {
+              name: 'backgroundImage',
+              type: 'upload',
+              relationTo: 'media',
+            },
+            linkGroup({
+              overrides: {
+                dbName: 'crs_links',
+                maxRows: 2,
+                minRows: 1,
+              },
+            }),
+          ],
+        },
+      ],
     },
   ],
   label: false,

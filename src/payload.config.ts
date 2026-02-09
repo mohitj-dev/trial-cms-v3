@@ -4,27 +4,16 @@ import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
-import {
-  Media,
-  Pages,
-  Posts,
-  Users,
-  Articles,
-  Awards,
-  BusinessEnquiries,
-  CorporateOverviews,
-  EbookDownloads,
-  ISGReports,
-  Countries,
-  Events,
-  Categories,
-} from './collections'
-
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
+import { Users } from './collections/Users'
+import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
+import { Posts } from './collections/Posts'
+import { Categories } from './collections/Categories'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -72,22 +61,9 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+    push: true,
   }),
-  collections: [
-    Pages,
-    Posts,
-    Media,
-    Users,
-    Articles,
-    Awards,
-    BusinessEnquiries,
-    CorporateOverviews,
-    EbookDownloads,
-    ISGReports,
-    Countries,
-    Categories,
-    Events,
-  ],
+  collections: [Pages, Posts, Media, Users, Categories],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins,

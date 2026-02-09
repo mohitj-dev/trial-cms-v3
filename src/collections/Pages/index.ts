@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import type { Page } from '@/payload-types'
 
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
@@ -7,6 +8,7 @@ import { CallToAction } from '../../blocks/CallToAction/config'
 import { Content } from '../../blocks/Content/config'
 import { FormBlock } from '../../blocks/Form/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
+import { ExpandablePara } from '../../blocks/ExpandablePara/config'
 import { hero } from '@/heros/config'
 import { slugField } from 'payload'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -35,6 +37,7 @@ export const Pages: CollectionConfig<'pages'> = {
   defaultPopulate: {
     title: true,
     slug: true,
+    breadcrumbs: true,
   },
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt'],
@@ -42,6 +45,9 @@ export const Pages: CollectionConfig<'pages'> = {
       url: ({ data, req }) =>
         generatePreviewPath({
           slug: data?.slug,
+          path:
+            (data?.breadcrumbs as Page['breadcrumbs'])?.at(-1)?.url ??
+            (data?.slug === 'home' ? '/' : `/${data?.slug}`),
           collection: 'pages',
           req,
         }),
@@ -49,6 +55,9 @@ export const Pages: CollectionConfig<'pages'> = {
     preview: (data, { req }) =>
       generatePreviewPath({
         slug: data?.slug as string,
+        path:
+          (data?.breadcrumbs as Page['breadcrumbs'])?.at(-1)?.url ??
+          (data?.slug === 'home' ? '/' : `/${data?.slug}`),
         collection: 'pages',
         req,
       }),
@@ -59,6 +68,28 @@ export const Pages: CollectionConfig<'pages'> = {
       name: 'title',
       type: 'text',
       required: true,
+    },
+    {
+      name: 'breadcrumbs',
+      type: 'array',
+      fields: [
+        {
+          name: 'doc',
+          type: 'relationship',
+          relationTo: 'pages',
+        },
+        {
+          name: 'url',
+          type: 'text',
+        },
+        {
+          name: 'label',
+          type: 'text',
+        },
+      ],
+      admin: {
+        hidden: true,
+      },
     },
     {
       type: 'tabs',
@@ -72,7 +103,7 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock],
+              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock, ExpandablePara],
               required: true,
               admin: {
                 initCollapsed: true,
@@ -117,6 +148,14 @@ export const Pages: CollectionConfig<'pages'> = {
         position: 'sidebar',
       },
     },
+    {
+      name: 'parent',
+      type: 'relationship',
+      relationTo: 'pages',
+      admin: {
+        position: 'sidebar',
+      },
+    },
     slugField(),
   ],
   hooks: {
@@ -127,7 +166,8 @@ export const Pages: CollectionConfig<'pages'> = {
   versions: {
     drafts: {
       autosave: {
-        interval: 100, // We set this interval for optimal live preview
+        interval: 2000, // We set this interval for optimal live preview
+        showSaveDraftButton: true,
       },
       schedulePublish: true,
     },

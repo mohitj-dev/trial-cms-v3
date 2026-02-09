@@ -71,15 +71,7 @@ export interface Config {
     posts: Post;
     media: Media;
     users: User;
-    articles: Article;
-    awards: Award;
-    'business-enquiries': BusinessEnquiry;
-    'corporate-overviews': CorporateOverview;
-    'ebook-downloads': EbookDownload;
-    'isg-reports': IsgReport;
-    countries: Country;
     categories: Category;
-    events: Event;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -101,15 +93,7 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    articles: ArticlesSelect<false> | ArticlesSelect<true>;
-    awards: AwardsSelect<false> | AwardsSelect<true>;
-    'business-enquiries': BusinessEnquiriesSelect<false> | BusinessEnquiriesSelect<true>;
-    'corporate-overviews': CorporateOverviewsSelect<false> | CorporateOverviewsSelect<true>;
-    'ebook-downloads': EbookDownloadsSelect<false> | EbookDownloadsSelect<true>;
-    'isg-reports': IsgReportsSelect<false> | IsgReportsSelect<true>;
-    countries: CountriesSelect<false> | CountriesSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
-    events: EventsSelect<false> | EventsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -173,109 +157,169 @@ export interface UserAuthOperations {
 export interface Page {
   id: number;
   title: string;
-  hero: {
-    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
-    richText?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    links?:
-      | {
-          link: {
-            type?: ('reference' | 'custom') | null;
-            newTab?: boolean | null;
-            reference?:
-              | ({
-                  relationTo: 'pages';
-                  value: number | Page;
-                } | null)
-              | ({
-                  relationTo: 'posts';
-                  value: number | Post;
-                } | null);
-            url?: string | null;
-            label: string;
-            /**
-             * Choose how the link should be rendered.
-             */
-            appearance?: ('default' | 'outline') | null;
-          };
-          id?: string | null;
-        }[]
-      | null;
-    media?: (number | null) | Media;
-  };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-    description?: string | null;
-  };
-  publishedAt?: string | null;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts".
- */
-export interface Post {
-  id: number;
-  title: string;
-  heroImage?: (number | null) | Media;
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  relatedPosts?: (number | Post)[] | null;
-  categories?: (number | Category)[] | null;
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-    description?: string | null;
-  };
-  publishedAt?: string | null;
-  authors?: (number | User)[] | null;
-  populatedAuthors?:
+  breadcrumbs?:
     | {
+        doc?: (number | null) | Page;
+        url?: string | null;
+        label?: string | null;
         id?: string | null;
-        name?: string | null;
       }[]
     | null;
+  hero: {
+    type: 'none' | 'animatedTwoLine' | 'standard' | 'carousel';
+    animatedTwoLine?: {
+      staticTitle: string;
+      animatedPhrases?:
+        | {
+            text: string;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * Milliseconds per character for the typing effect.
+       */
+      typingSpeed?: number | null;
+      description?: string | null;
+      metrics?:
+        | {
+            /**
+             * Number or value (e.g. 37, 575+)
+             */
+            value: string;
+            /**
+             * Metric label (e.g. Locations, Awards)
+             */
+            label: string;
+            id?: string | null;
+          }[]
+        | null;
+      backgroundImage?: (number | null) | Media;
+      links?:
+        | {
+            link: {
+              type?: ('reference' | 'custom') | null;
+              newTab?: boolean | null;
+              reference?:
+                | ({
+                    relationTo: 'pages';
+                    value: number | Page;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: number | Post;
+                  } | null);
+              url?: string | null;
+              label: string;
+              /**
+               * Choose how the link should be rendered.
+               */
+              appearance?: ('default' | 'outline') | null;
+            };
+            id?: string | null;
+          }[]
+        | null;
+    };
+    standard?: {
+      title: string;
+      description?: string | null;
+      metrics?:
+        | {
+            /**
+             * Number or value (e.g. 37, 575+)
+             */
+            value: string;
+            /**
+             * Metric label (e.g. Locations, Awards)
+             */
+            label: string;
+            id?: string | null;
+          }[]
+        | null;
+      backgroundImage?: (number | null) | Media;
+      links?:
+        | {
+            link: {
+              type?: ('reference' | 'custom') | null;
+              newTab?: boolean | null;
+              reference?:
+                | ({
+                    relationTo: 'pages';
+                    value: number | Page;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: number | Post;
+                  } | null);
+              url?: string | null;
+              label: string;
+              /**
+               * Choose how the link should be rendered.
+               */
+              appearance?: ('default' | 'outline') | null;
+            };
+            id?: string | null;
+          }[]
+        | null;
+    };
+    carousel?: {
+      slides?:
+        | {
+            title: string;
+            description?: string | null;
+            metrics?:
+              | {
+                  /**
+                   * Number or value (e.g. 37, 575+)
+                   */
+                  value: string;
+                  /**
+                   * Metric label (e.g. Locations, Awards)
+                   */
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            backgroundImage?: (number | null) | Media;
+            links?:
+              | {
+                  link: {
+                    type?: ('reference' | 'custom') | null;
+                    newTab?: boolean | null;
+                    reference?:
+                      | ({
+                          relationTo: 'pages';
+                          value: number | Page;
+                        } | null)
+                      | ({
+                          relationTo: 'posts';
+                          value: number | Post;
+                        } | null);
+                    url?: string | null;
+                    label: string;
+                    /**
+                     * Choose how the link should be rendered.
+                     */
+                    appearance?: ('default' | 'outline') | null;
+                  };
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+  };
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | ExpandableParaBlock)[];
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  publishedAt?: string | null;
+  parent?: (number | null) | Page;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
@@ -292,6 +336,10 @@ export interface Post {
 export interface Media {
   id: number;
   alt?: string | null;
+  /**
+   * Optional mobile-specific image to use in responsive heroes.
+   */
+  mobileImage?: (number | null) | Media;
   caption?: {
     root: {
       type: string;
@@ -403,6 +451,56 @@ export interface FolderInterface {
   folderType?: 'media'[] | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number;
+  title: string;
+  heroImage?: (number | null) | Media;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  relatedPosts?: (number | Post)[] | null;
+  categories?: (number | Category)[] | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  publishedAt?: string | null;
+  authors?: (number | User)[] | null;
+  populatedAuthors?:
+    | {
+        id?: string | null;
+        name?: string | null;
+      }[]
+    | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -797,428 +895,37 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles".
+ * via the `definition` "ExpandableParaBlock".
  */
-export interface Article {
-  id: number;
-  locale: 'en' | 'zh';
-  title: string;
-  slug: string;
-  category?:
-    | (
-        | 'AWARDS'
-        | 'PRESS_RELEASES'
-        | 'FEATURED_ARTICLES'
-        | 'CSR_ACTIVITIES'
-        | 'WEBINARS'
-        | 'IN_THE_NEWS'
-        | 'FINANCIAL_NEWS'
-        | 'INDUSTRY_INSIGHTS'
-        | 'E_BOOKS'
-        | 'WHITE_PAPERS'
-      )
-    | null;
-  articleOrigin?: string | null;
-  youtubeUrl?: string | null;
-  youkuUrl?: string | null;
-  featuredImage?: (number | null) | Media;
-  seo?: {
-    metaTitle?: string | null;
-    metaDescription?: string | null;
-  };
-  summary?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  body?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  speakers?:
+export interface ExpandableParaBlock {
+  heading: string;
+  items?:
     | {
-        name?: string | null;
-        title?: string | null;
-        image?: (number | null) | Media;
+        icon: number | Media;
+        eyebrow?: string | null;
+        title: string;
+        description: string;
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+        };
         id?: string | null;
       }[]
     | null;
-  formTitle?: string | null;
-  industryInsightsEbook?: (number | null) | Media;
-  internalScript?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  industryInsightsDownloadButtonLabel?: string | null;
-  articlePublishDate?: string | null;
-  tags?:
-    | {
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  publishOn?: ('Global' | 'China') | null;
-  faq?:
-    | {
-        question?: string | null;
-        answer?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        id?: string | null;
-      }[]
-    | null;
-  sliderImages?:
-    | {
-        image?: (number | null) | Media;
-        caption?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "awards".
- */
-export interface Award {
-  id: number;
-  locale: 'en' | 'zh';
-  title: string;
-  awardedBy?: string | null;
-  name?: string | null;
-  awardedDate?: string | null;
-  country?:
-    | (
-        | 'Singapore'
-        | 'Malaysia'
-        | 'Thailand'
-        | 'Philippines'
-        | 'HongKong'
-        | 'China'
-        | 'SouthKorea'
-        | 'Japan'
-        | 'India'
-        | 'Romania'
-        | 'Spain'
-        | 'Colombia'
-        | 'Brazil'
-        | 'Turkey'
-        | 'Indonesia'
-        | 'Vietnam'
-        | 'Regional'
-      )
-    | null;
-  category?:
-    | (
-        | 'CustomerExperience'
-        | 'PeopleCommunity'
-        | 'PreferredEmployer'
-        | 'InnovationTechnology'
-        | 'IndustryCompliance'
-        | 'Business'
-        | 'Human Resources'
-      )
-    | null;
-  image?: (number | null) | Media;
-  link?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "business-enquiries".
- */
-export interface BusinessEnquiry {
-  id: number;
-  fullName?: string | null;
-  firstName?: string | null;
-  lastName?: string | null;
-  email?: string | null;
-  phoneNumber?: string | null;
-  companyName?: string | null;
-  companyIndustry?: string | null;
-  preferredLocation?: string | null;
-  preferredLanguage?: string | null;
-  headcount?: string | null;
-  solutions?: string | null;
-  message?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  origin?: string | null;
-  emailSent?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "corporate-overviews".
- */
-export interface CorporateOverview {
-  id: number;
-  fullName?: string | null;
-  email?: string | null;
-  companyName?: string | null;
-  phoneNumber?: string | null;
-  message?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  origin?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ebook-downloads".
- */
-export interface EbookDownload {
-  id: number;
-  name?: string | null;
-  email?: string | null;
-  companyName?: string | null;
-  jobRole?: string | null;
-  ebookTitle?: string | null;
-  locale?: ('en' | 'zh') | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "isg-reports".
- */
-export interface IsgReport {
-  id: number;
-  firstName?: string | null;
-  email?: string | null;
-  companyName?: string | null;
-  jobRole?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "countries".
- */
-export interface Country {
-  id: number;
-  locale: 'en' | 'zh';
-  countryName: string;
-  officeName?: string | null;
-  googleMapLink?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  countryCode?: string | null;
-  officeInfoDetails?:
-    | {
-        label?: string | null;
-        value?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  officeImages?:
-    | {
-        image?: (number | null) | Media;
-        caption?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  sortOrder?: number | null;
-  secondarySortOrder?: number | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events".
- */
-export interface Event {
-  id: number;
-  locale: 'en' | 'zh';
-  name: string;
-  publishedDate?: string | null;
-  cxParts?:
-    | {
-        title?: string | null;
-        description?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        id?: string | null;
-      }[]
-    | null;
-  carouselFeatured?:
-    | {
-        image?: (number | null) | Media;
-        caption?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  featuredItems?:
-    | {
-        title?: string | null;
-        description?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        image?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
-  contentBlocks?:
-    | {
-        heading?: string | null;
-        content?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        id?: string | null;
-      }[]
-    | null;
-  gallery?:
-    | {
-        image?: (number | null) | Media;
-        alt?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  seo?: {
-    metaTitle?: string | null;
-    metaDescription?: string | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'expandablePara';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1427,40 +1134,8 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
-        relationTo: 'articles';
-        value: number | Article;
-      } | null)
-    | ({
-        relationTo: 'awards';
-        value: number | Award;
-      } | null)
-    | ({
-        relationTo: 'business-enquiries';
-        value: number | BusinessEnquiry;
-      } | null)
-    | ({
-        relationTo: 'corporate-overviews';
-        value: number | CorporateOverview;
-      } | null)
-    | ({
-        relationTo: 'ebook-downloads';
-        value: number | EbookDownload;
-      } | null)
-    | ({
-        relationTo: 'isg-reports';
-        value: number | IsgReport;
-      } | null)
-    | ({
-        relationTo: 'countries';
-        value: number | Country;
-      } | null)
-    | ({
         relationTo: 'categories';
         value: number | Category;
-      } | null)
-    | ({
-        relationTo: 'events';
-        value: number | Event;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1530,27 +1205,117 @@ export interface PayloadMigration {
  */
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
   hero?:
     | T
     | {
         type?: T;
-        richText?: T;
-        links?:
+        animatedTwoLine?:
           | T
           | {
-              link?:
+              staticTitle?: T;
+              animatedPhrases?:
                 | T
                 | {
-                    type?: T;
-                    newTab?: T;
-                    reference?: T;
-                    url?: T;
-                    label?: T;
-                    appearance?: T;
+                    text?: T;
+                    id?: T;
                   };
-              id?: T;
+              typingSpeed?: T;
+              description?: T;
+              metrics?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              backgroundImage?: T;
+              links?:
+                | T
+                | {
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                          label?: T;
+                          appearance?: T;
+                        };
+                    id?: T;
+                  };
             };
-        media?: T;
+        standard?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              metrics?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              backgroundImage?: T;
+              links?:
+                | T
+                | {
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                          label?: T;
+                          appearance?: T;
+                        };
+                    id?: T;
+                  };
+            };
+        carousel?:
+          | T
+          | {
+              slides?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    metrics?:
+                      | T
+                      | {
+                          value?: T;
+                          label?: T;
+                          id?: T;
+                        };
+                    backgroundImage?: T;
+                    links?:
+                      | T
+                      | {
+                          link?:
+                            | T
+                            | {
+                                type?: T;
+                                newTab?: T;
+                                reference?: T;
+                                url?: T;
+                                label?: T;
+                                appearance?: T;
+                              };
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+            };
       };
   layout?:
     | T
@@ -1560,6 +1325,7 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
+        expandablePara?: T | ExpandableParaBlockSelect<T>;
       };
   meta?:
     | T
@@ -1569,6 +1335,7 @@ export interface PagesSelect<T extends boolean = true> {
         description?: T;
       };
   publishedAt?: T;
+  parent?: T;
   generateSlug?: T;
   slug?: T;
   updatedAt?: T;
@@ -1661,6 +1428,33 @@ export interface FormBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ExpandableParaBlock_select".
+ */
+export interface ExpandableParaBlockSelect<T extends boolean = true> {
+  heading?: T;
+  items?:
+    | T
+    | {
+        icon?: T;
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
@@ -1696,6 +1490,7 @@ export interface PostsSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  mobileImage?: T;
   caption?: T;
   folder?: T;
   updatedAt?: T;
@@ -1809,176 +1604,6 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles_select".
- */
-export interface ArticlesSelect<T extends boolean = true> {
-  locale?: T;
-  title?: T;
-  slug?: T;
-  category?: T;
-  articleOrigin?: T;
-  youtubeUrl?: T;
-  youkuUrl?: T;
-  featuredImage?: T;
-  seo?:
-    | T
-    | {
-        metaTitle?: T;
-        metaDescription?: T;
-      };
-  summary?: T;
-  body?: T;
-  speakers?:
-    | T
-    | {
-        name?: T;
-        title?: T;
-        image?: T;
-        id?: T;
-      };
-  formTitle?: T;
-  industryInsightsEbook?: T;
-  internalScript?: T;
-  industryInsightsDownloadButtonLabel?: T;
-  articlePublishDate?: T;
-  tags?:
-    | T
-    | {
-        label?: T;
-        id?: T;
-      };
-  publishOn?: T;
-  faq?:
-    | T
-    | {
-        question?: T;
-        answer?: T;
-        id?: T;
-      };
-  sliderImages?:
-    | T
-    | {
-        image?: T;
-        caption?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "awards_select".
- */
-export interface AwardsSelect<T extends boolean = true> {
-  locale?: T;
-  title?: T;
-  awardedBy?: T;
-  name?: T;
-  awardedDate?: T;
-  country?: T;
-  category?: T;
-  image?: T;
-  link?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "business-enquiries_select".
- */
-export interface BusinessEnquiriesSelect<T extends boolean = true> {
-  fullName?: T;
-  firstName?: T;
-  lastName?: T;
-  email?: T;
-  phoneNumber?: T;
-  companyName?: T;
-  companyIndustry?: T;
-  preferredLocation?: T;
-  preferredLanguage?: T;
-  headcount?: T;
-  solutions?: T;
-  message?: T;
-  origin?: T;
-  emailSent?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "corporate-overviews_select".
- */
-export interface CorporateOverviewsSelect<T extends boolean = true> {
-  fullName?: T;
-  email?: T;
-  companyName?: T;
-  phoneNumber?: T;
-  message?: T;
-  origin?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ebook-downloads_select".
- */
-export interface EbookDownloadsSelect<T extends boolean = true> {
-  name?: T;
-  email?: T;
-  companyName?: T;
-  jobRole?: T;
-  ebookTitle?: T;
-  locale?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "isg-reports_select".
- */
-export interface IsgReportsSelect<T extends boolean = true> {
-  firstName?: T;
-  email?: T;
-  companyName?: T;
-  jobRole?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "countries_select".
- */
-export interface CountriesSelect<T extends boolean = true> {
-  locale?: T;
-  countryName?: T;
-  officeName?: T;
-  googleMapLink?: T;
-  description?: T;
-  countryCode?: T;
-  officeInfoDetails?:
-    | T
-    | {
-        label?: T;
-        value?: T;
-        id?: T;
-      };
-  officeImages?:
-    | T
-    | {
-        image?: T;
-        caption?: T;
-        id?: T;
-      };
-  sortOrder?: T;
-  secondarySortOrder?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
@@ -1996,60 +1621,6 @@ export interface CategoriesSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events_select".
- */
-export interface EventsSelect<T extends boolean = true> {
-  locale?: T;
-  name?: T;
-  publishedDate?: T;
-  cxParts?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        id?: T;
-      };
-  carouselFeatured?:
-    | T
-    | {
-        image?: T;
-        caption?: T;
-        id?: T;
-      };
-  featuredItems?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        image?: T;
-        id?: T;
-      };
-  contentBlocks?:
-    | T
-    | {
-        heading?: T;
-        content?: T;
-        id?: T;
-      };
-  gallery?:
-    | T
-    | {
-        image?: T;
-        alt?: T;
-        id?: T;
-      };
-  seo?:
-    | T
-    | {
-        metaTitle?: T;
-        metaDescription?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2334,7 +1905,8 @@ export interface Header {
   id: number;
   navItems?:
     | {
-        link: {
+        type: 'simple' | 'dropdown';
+        link?: {
           type?: ('reference' | 'custom') | null;
           newTab?: boolean | null;
           reference?:
@@ -2349,6 +1921,41 @@ export interface Header {
           url?: string | null;
           label: string;
         };
+        dropdownLink?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+        };
+        dropdownLinks?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
@@ -2392,6 +1999,7 @@ export interface HeaderSelect<T extends boolean = true> {
   navItems?:
     | T
     | {
+        type?: T;
         link?:
           | T
           | {
@@ -2400,6 +2008,29 @@ export interface HeaderSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
+            };
+        dropdownLink?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        dropdownLinks?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
             };
         id?: T;
       };
